@@ -46,7 +46,7 @@ export const SERVICES: Service[] = [
       "Mineralische und natürliche Putze in höchster Handwerksqualität — von der glatten Innenoberfläche bis zum strukturierten Außenputz.",
     icon: "putze",
     image:
-      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80&auto=format",
+      "https://images.unsplash.com/photo-1577200080776-fe8b6c5559dc?w=800&q=80&auto=format",
   },
   {
     id: "spachtel",

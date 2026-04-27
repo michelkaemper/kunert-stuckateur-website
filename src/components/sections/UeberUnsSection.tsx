@@ -32,8 +32,8 @@ export function UeberUnsSection() {
               }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=900&q=80&auto=format"
-                alt="Handwerkliche Präzision – Kunert Stuckateur"
+                src="https://images.unsplash.com/photo-1761986757577-140af8859587?w=900&q=80&auto=format"
+                alt="Stuckateur verputzt Wand mit Kelle – Kunert Handwerksbetrieb"
                 fill
                 className="object-cover object-center"
                 sizes="(max-width: 768px) 100vw, 50vw"
