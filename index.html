@@ -348,6 +348,55 @@
     @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
     @keyframes fadeIn { to { opacity: 1; } }
 
+    /* ── Hero Parallax ── */
+    .hero-bg img { will-change: transform; }
+    .hero-content { will-change: transform; }
+    .hero-h1 { will-change: transform; }
+
+    .hero-glow {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(196,168,130,0.11) 0%, rgba(196,168,130,0.04) 40%, transparent 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .hero-glow.visible { opacity: 1; }
+
+    .hero-accent-line {
+      position: absolute;
+      top: 15%;
+      right: 8%;
+      width: 1px;
+      height: 35%;
+      background: linear-gradient(to bottom, transparent, rgba(196,168,130,0.45), transparent);
+      will-change: transform;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeIn 0.8s 1.5s forwards;
+    }
+    .hero-accent-dot {
+      position: absolute;
+      top: 15%;
+      right: calc(8% - 3px);
+      width: 7px;
+      height: 7px;
+      background: var(--sand);
+      will-change: transform;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeIn 0.8s 1.7s forwards;
+    }
+    @media (max-width: 768px) {
+      .hero-accent-line, .hero-accent-dot { display: none; }
+    }
+
     /* ══════════════════════════════════════
        LEISTUNGEN
     ══════════════════════════════════════ */
@@ -917,6 +966,9 @@
   </div>
   <div class="hero-overlay" aria-hidden="true"></div>
   <div class="hero-line" aria-hidden="true"></div>
+  <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
+  <div class="hero-accent-line" id="heroAccentLine" aria-hidden="true"></div>
+  <div class="hero-accent-dot" id="heroAccentDot" aria-hidden="true"></div>
 
   <div class="hero-content">
     <span class="overline hero-overline">Stuckateur &amp; Handwerk · Wetter/Volmarstein</span>
@@ -1565,6 +1617,65 @@
     this.style.display = 'none';
     document.getElementById('formSuccess').classList.add('show');
   });
+
+  // ── Hero Cursor Parallax ──
+  (function() {
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const heroBgImg = hero.querySelector('.hero-bg img');
+    const heroContent = hero.querySelector('.hero-content');
+    const heroH1 = hero.querySelector('.hero-h1');
+    const heroGlow = document.getElementById('heroGlow');
+    const accentLine = document.getElementById('heroAccentLine');
+    const accentDot = document.getElementById('heroAccentDot');
+
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+    let raf;
+    let heroRect = hero.getBoundingClientRect();
+
+    window.addEventListener('resize', () => { heroRect = hero.getBoundingClientRect(); }, { passive: true });
+
+    hero.addEventListener('mouseenter', () => {
+      heroGlow.classList.add('visible');
+    });
+    hero.addEventListener('mouseleave', () => {
+      heroGlow.classList.remove('visible');
+      targetX = 0;
+      targetY = 0;
+    });
+
+    hero.addEventListener('mousemove', (e) => {
+      heroRect = hero.getBoundingClientRect();
+      targetX = (e.clientX - heroRect.left) / heroRect.width - 0.5;
+      targetY = (e.clientY - heroRect.top) / heroRect.height - 0.5;
+      heroGlow.style.left = (e.clientX - heroRect.left) + 'px';
+      heroGlow.style.top  = (e.clientY - heroRect.top)  + 'px';
+    }, { passive: true });
+
+    function tick() {
+      currentX += (targetX - currentX) * 0.06;
+      currentY += (targetY - currentY) * 0.06;
+      const x = currentX, y = currentY;
+
+      heroBgImg.style.transform  = `translate(${x * -40}px, ${y * -25}px) scale(1.08)`;
+      heroContent.style.transform = `translate(${x * 12}px, ${y * 8}px)`;
+      heroH1.style.transform      = `translate(${x * 6}px, ${y * 4}px)`;
+      if (accentLine) {
+        accentLine.style.transform = `translate(${x * -10}px, ${y * -6}px)`;
+        accentDot.style.transform  = `translate(${x * -14}px, ${y * -9}px)`;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    const vis = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) { raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); }
+    }, { threshold: 0.1 });
+    vis.observe(hero);
+  })();
 </script>
 
 </body>
